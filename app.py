@@ -111,6 +111,10 @@ trainer.train(generate_movie_conversations())
 print("Chatbot training complete!")
 
 # Load Telegram Token
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 
 # Telegram Bot Handlers
