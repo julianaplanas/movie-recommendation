@@ -1,0 +1,8 @@
+fuzzywuzzy
+chatterbot
+chatterbot_corpus
+requests
+python-telegram-bot
+nest_asyncio
+kagglehub
+pandas
