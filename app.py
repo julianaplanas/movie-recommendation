@@ -9,12 +9,9 @@ from telegram.ext import Application, CommandHandler, MessageHandler, filters, C
 from chatterbot import ChatBot
 from chatterbot.trainers import ListTrainer
 
-# Download latest dataset version from Kaggle
-path = kagglehub.dataset_download("rounakbanik/the-movies-dataset")
-
 # Load the dataset
-movies_df = pd.read_csv("/root/.cache/kagglehub/datasets/rounakbanik/the-movies-dataset/versions/7/movies_metadata.csv", low_memory=False)
-credits_df = pd.read_csv("/root/.cache/kagglehub/datasets/rounakbanik/the-movies-dataset/versions/7/credits.csv")
+movies_df = pd.read_csv("/data/movies_metadata.csv", low_memory=False)
+credits_df = pd.read_csv("/data/credits.csv")
 
 # Preprocess Movies Data
 movies_df = movies_df[["id", "title", "genres", "overview", "vote_average"]]
