@@ -31,11 +31,11 @@ def download_data():
 
     # Download movies_metadata.csv
     if not os.path.exists(movies_path):
-        os.system(f"wget -O {movies_path} 'https://drive.google.com/uc?id=1IJYO07SDczRHZNJ3jRbz3A_VhFRCpzL3'")
+        os.system(f"wget -O {movies_path} 'https://drive.google.com/file/d/1IJYO07SDczRHZNJ3jRbz3A_VhFRCpzL3'")
 
     # Download credits.csv
     if not os.path.exists(credits_path):
-        os.system(f"wget -O {credits_path} 'https://drive.google.com/uc?id=1Qma0SUoQ56ZthSuaZtw5tORZ0nEOStS-'")
+        os.system(f"wget -O {credits_path} 'https://drive.google.com/file/d/1Qma0SUoQ56ZthSuaZtw5tORZ0nEOStS-'")
 
     print("Download completed!")
 
