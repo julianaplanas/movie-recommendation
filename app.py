@@ -9,16 +9,38 @@ from chatterbot import ChatBot
 from chatterbot.trainers import ListTrainer
 import subprocess
 
-# Check if dataset exists
-if not os.path.exists("data/movies_metadata.csv") or not os.path.exists("data/credits.csv"):
-    print("Dataset not found. Downloading...")
-    subprocess.run(["python", "download_data.py"])  # Runs the script if files are missing
-else:
-    print("Dataset is ready. Skipping download.")
-
 DATA_PATH = "data"
 CREDITS_FILE = f"{DATA_PATH}/credits.csv"
 MOVIES_FILE = f"{DATA_PATH}/movies_metadata.csv"
+
+def download_data():
+    """Downloads the dataset only if it doesn't exist."""
+    data_dir = "data"
+    movies_path = os.path.join(data_dir, "movies_metadata.csv")
+    credits_path = os.path.join(data_dir, "credits.csv")
+
+    # Create data directory if not exists
+    os.makedirs(data_dir, exist_ok=True)
+
+    # Check if files already exist
+    if os.path.exists(movies_path) and os.path.exists(credits_path):
+        print("Dataset is ready. Skipping download.")
+        return  # Exit function if files exist
+
+    print("Downloading dataset...")
+
+    # Download movies_metadata.csv
+    if not os.path.exists(movies_path):
+        os.system(f"wget -O {movies_path} 'https://drive.google.com/uc?id=1IJYO07SDczRHZNJ3jRbz3A_VhFRCpzL3'")
+
+    # Download credits.csv
+    if not os.path.exists(credits_path):
+        os.system(f"wget -O {credits_path} 'https://drive.google.com/uc?id=1Qma0SUoQ56ZthSuaZtw5tORZ0nEOStS-'")
+
+    print("Download completed!")
+
+# Run the function at startup
+download_data()
 
 movies_df = pd.read_csv(MOVIES_FILE, low_memory=False)
 credits_df = pd.read_csv(CREDITS_FILE, low_memory=False)
