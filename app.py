@@ -42,7 +42,7 @@ def download_data():
 # Run the function at startup
 download_data()
 
-movies_df = pd.read_csv(MOVIES_FILE, low_memory=False)
+movies_df = pd.read_csv(MOVIES_FILE, low_memory=False, dtype=str)
 credits_df = pd.read_csv(CREDITS_FILE, low_memory=False)
 
 print("Movie dataset loaded successfully!")
