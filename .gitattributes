@@ -1,2 +1,0 @@
-data/credits.csv filter=lfs diff=lfs merge=lfs -text
-data/movies_metadata.csv filter=lfs diff=lfs merge=lfs -text
