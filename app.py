@@ -42,8 +42,8 @@ def download_data():
 # Run the function at startup
 download_data()
 
-movies_df = pd.read_csv(MOVIES_FILE, sep=None, engine="python")
-credits_df = pd.read_csv(CREDITS_FILE, sep=None, engine="python")
+movies_df = pd.read_csv(MOVIES_FILE, error_bad_lines=False, warn_bad_lines=True)
+credits_df = pd.read_csv(CREDITS_FILE, error_bad_lines=False, warn_bad_lines=True)
 
 print(movies_df.head())
 print(movies_df.columns)
