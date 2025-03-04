@@ -8,37 +8,13 @@ from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, CallbackContext
 from chatterbot import ChatBot
 from chatterbot.trainers import ListTrainer
-import gdown
 
-DATA_PATH = "/app/data"
-CREDITS_FILE = f"{DATA_PATH}/credits.csv"
-MOVIES_FILE = f"{DATA_PATH}/movies_metadata.csv"
-
-CREDITS_DRIVE_ID = "1Qma0SUoQ56ZthSuaZtw5tORZ0nEOStS-"
-MOVIES_DRIVE_ID = "1IJYO07SDczRHZNJ3jRbz3A_VhFRCpzL3"
-
-os.makedirs(DATA_PATH, exist_ok=True)
-
-def download_file(file_id, dest_path):
-    """Download a file from Google Drive if it does not exist."""
-    if not os.path.exists(dest_path):
-        print(f"Downloading {dest_path} from Google Drive...")
-        url = f"https://drive.google.com/uc?id={file_id}"
-        gdown.download(url, dest_path, quiet=False)
-    else:
-        print(f"{dest_path} already exists.")
-
-# Download the datasets if they don't exist
-download_file(CREDITS_DRIVE_ID, CREDITS_FILE)
-download_file(MOVIES_DRIVE_ID, MOVIES_FILE)
-
-# Load dataset
-movies_df = pd.read_csv(MOVIES_FILE, low_memory=False)
-credits_df = pd.read_csv(CREDITS_FILE, low_memory=False)
+# Download latest version
+path = kagglehub.dataset_download("rounakbanik/the-movies-dataset")
 
 # Load the dataset
-#movies_df = pd.read_csv("/data/movies_metadata.csv", low_memory=False)
-#credits_df = pd.read_csv("/data/credits.csv")
+movies_df = pd.read_csv("/root/.cache/kagglehub/datasets/rounakbanik/the-movies-dataset/versions/7/movies_metadata.csv", low_memory=False)
+credits_df = pd.read_csv("/root/.cache/kagglehub/datasets/rounakbanik/the-movies-dataset/versions/7/credits.csv")
 
 # Preprocess Movies Data
 movies_df = movies_df[["id", "title", "genres", "overview", "vote_average"]]
