@@ -7,6 +7,14 @@ from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, CallbackContext
 from chatterbot import ChatBot
 from chatterbot.trainers import ListTrainer
+import subprocess
+
+# Check if dataset exists
+if not os.path.exists("data/movies_metadata.csv") or not os.path.exists("data/credits.csv"):
+    print("Dataset not found. Downloading...")
+    subprocess.run(["python", "download_data.py"])  # Runs the script if files are missing
+else:
+    print("Dataset is ready. Skipping download.")
 
 DATA_PATH = "data"
 CREDITS_FILE = f"{DATA_PATH}/credits.csv"
