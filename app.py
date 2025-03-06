@@ -9,17 +9,17 @@ from telegram.ext import Application, CommandHandler, MessageHandler, filters, C
 from chatterbot import ChatBot
 from chatterbot.trainers import ListTrainer
 
-# Ensure .env is loaded correctly
+# Explicitly load .env
 load_dotenv(dotenv_path=".env")
 
-# Load environment variables
+# Load Environment Variables
 DB_URL = os.getenv("DATABASE_URL")
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 
 if not DB_URL:
-    raise ValueError("❌ DATABASE_URL is not set! Check your .env file.")
+    raise ValueError("DATABASE_URL is not set! Check your .env file or environment variables.")
 
-print(f"✅ Using DATABASE_URL: {DB_URL}")
+print(f"Using DATABASE_URL: {DB_URL}")  # Debugging
 
 # Database Connection Function
 def get_db_connection():
@@ -33,7 +33,7 @@ def fetch_movies():
     cur = conn.cursor()
     
     cur.execute("""
-        SELECT movie_id, title, genres, overview, vote_average, cast
+        SELECT movie_id, title, genres, overview, vote_average, "cast"
         FROM movies_full;
     """)
     
@@ -55,7 +55,7 @@ def fetch_movies():
 
 # Load Movies into Memory
 movies_data = fetch_movies()
-print(f"✅ Loaded {len(movies_data)} movies from PostgreSQL")
+print(f"Loaded {len(movies_data)} movies from PostgreSQL")
 
 # Generate Conversations for Chatterbot Training
 def generate_movie_conversations():
@@ -83,7 +83,7 @@ def generate_movie_conversations():
 chatbot = ChatBot("MovieBot", storage_adapter="chatterbot.storage.SQLStorageAdapter")
 trainer = ListTrainer(chatbot)
 trainer.train(generate_movie_conversations())
-print("✅ Chatbot training complete using PostgreSQL data!")
+print("Chatbot training complete using PostgreSQL data!")
 
 # Function to Fetch Movie Recommendations from PostgreSQL
 def get_movie_recommendation(query):
@@ -92,7 +92,7 @@ def get_movie_recommendation(query):
     cur = conn.cursor()
     
     cur.execute("""
-        SELECT title, overview, genres, vote_average, cast
+        SELECT title, overview, genres, vote_average, "cast"
         FROM movies_full
         WHERE title ILIKE %s
         LIMIT 1;
