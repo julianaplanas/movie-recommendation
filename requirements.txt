@@ -8,3 +8,5 @@ kagglehub
 pandas
 python-dotenv
 gdown
+psycopg2-binary
+
