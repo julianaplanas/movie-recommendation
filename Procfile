@@ -1,1 +1,1 @@
-worker: python download_data.py && python app.py
+worker: python app.py
