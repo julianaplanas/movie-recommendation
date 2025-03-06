@@ -45,7 +45,7 @@ def fetch_movies():
             "genres": row[2],
             "overview": row[3],
             "vote_average": row[4],
-            "cast": json.loads(row[5]) if row[5] else []
+            "cast": row[5] if isinstance(row[5], list) else json.loads(row[5]) if row[5] else []
         }
         movies.append(movie)
     
@@ -69,13 +69,57 @@ def generate_movie_conversations():
         rating = movie["vote_average"]
         cast = ", ".join(movie["cast"]) if movie["cast"] else "unknown actors"
 
+        # Expanded movie-related queries
+        conversations.extend([
+            "Can you recommend a movie?", f"You should watch {title}. It's a {genre} film with a rating of {rating}.",
+            "Suggest a good movie.", f"You might like {title}, a highly rated {genre} film.",
+            "What’s a great movie to watch?", f"I recommend {title}. It's a {genre} movie with a {rating} rating.",
+            "Give me a movie suggestion.", f"Sure! Try {title}, a fantastic {genre} film.",
+            "What is a popular movie right now?", f"{title} is trending! It's a {genre} movie with a rating of {rating}.",
+            "I want to watch something interesting.", f"How about {title}? It's a {genre} film with a compelling story.",
+            "Give me a critically acclaimed movie.", f"{title} has received great reviews and has a rating of {rating}.",
+            "What movie should I watch tonight?", f"Try watching {title}, a top-rated {genre} film.",
+            "Surprise me with a movie!", f"You might enjoy {title}, a highly rated {genre} movie."
+        ])
+
+        # Expanded queries about specific movies
         conversations.extend([
             f"Tell me about {title}.", f"{title} is a {genre} movie. Overview: {overview}",
-            f"Would you recommend {title}?", f"Yes! {title} has a rating of {rating} and is well-received.",
-            f"Who stars in {title}?", f"{title} features {cast}.",
-            f"What genre is {title}?", f"{title} falls under the {genre} genre.",
-            f"Should I watch {title}?", f"If you enjoy {genre} movies, you'll like {title} (Rating: {rating})."
+            f"What’s {title} about?", f"{title} is a {genre} movie. Here's the synopsis: {overview}",
+            f"Can you describe {title}?", f"{title} is a {genre} film with this storyline: {overview}",
+            f"What makes {title} special?", f"{title} is a fan favorite, known for its {genre} story and a rating of {rating}.",
+            f"Why is {title} famous?", f"{title} is well-known for its {genre} storyline and outstanding performances."
         ])
+
+        # Expanded genre-related queries
+        conversations.extend([
+            f"What genre is {title}?", f"{title} falls under the {genre} genre.",
+            f"Is {title} an action movie?", f"{title} is a {genre} movie.",
+            f"Does {title} have any comedy?", f"{title} is a {genre} film.",
+            f"I like {genre} movies. Any suggestions?", f"You might like {title}, a great {genre} film!",
+            f"What are some must-watch {genre} films?", f"{title} is one of the best {genre} movies!"
+        ])
+
+        # Expanded rating-based queries
+        conversations.extend([
+            f"Is {title} a good movie?", f"{title} has a rating of {rating}. Many viewers liked it!",
+            f"Would you recommend {title}?", f"Yes! {title} has a rating of {rating} and is well-received.",
+            f"What do people think about {title}?", f"{title} has a {rating} rating and is considered a {genre} classic.",
+            f"Should I watch {title}?", f"If you enjoy {genre} movies, you'll probably like {title}. It has a {rating} rating."
+        ])
+
+        # Expanded actor-related queries
+        for actor in movie["cast"]:
+            conversations.extend([
+                f"Which movies feature {actor}?", f"{actor} stars in {title}.",
+                f"Has {actor} been in any famous movies?", f"Yes! {actor} appeared in {title}, a popular {genre} film.",
+                f"Tell me a movie with {actor}.", f"{actor} is in {title}, which is a {genre} movie.",
+                f"Give me a list of {actor}’s movies.", f"{actor} starred in {title} and more films.",
+                f"Is {actor} a good actor?", f"{actor} is well known for their performances in movies like {title}.",
+                f"What is {actor} best known for?", f"{actor} is famous for starring in movies like {title}.",
+                f"Who are some co-stars of {actor}?", f"In {title}, {actor} starred alongside {cast}.",
+                f"Has {actor} worked in {genre} movies?", f"Yes, {actor} has appeared in {genre} movies like {title}.",
+            ])
 
     return conversations
 
