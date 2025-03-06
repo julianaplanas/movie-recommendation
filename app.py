@@ -9,8 +9,10 @@ from telegram.ext import Application, CommandHandler, MessageHandler, filters, C
 from chatterbot import ChatBot
 from chatterbot.trainers import ListTrainer
 
+# Ensure .env is loaded correctly
+load_dotenv(dotenv_path=".env")
+
 # Load environment variables
-load_dotenv()
 DB_URL = os.getenv("DATABASE_URL")
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 
