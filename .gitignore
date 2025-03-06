@@ -1,7 +1,4 @@
 .env
-data/credits.csv
-data/movies_metadata.csv
-data/credits.csv
-data/movies_metadata.csv
-upload_movies.py
+data/
 myenv/
+upload_movies.py
