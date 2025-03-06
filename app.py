@@ -14,6 +14,11 @@ load_dotenv()
 DB_URL = os.getenv("DATABASE_URL")
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 
+if not DB_URL:
+    raise ValueError("❌ DATABASE_URL is not set! Check your .env file.")
+
+print(f"✅ Using DATABASE_URL: {DB_URL}")
+
 # Database Connection Function
 def get_db_connection():
     """Establishes a PostgreSQL connection."""
