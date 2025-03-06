@@ -9,3 +9,5 @@ pandas
 python-dotenv
 gdown
 psycopg2-binary
+spacy
+!python -m spacy download en_core_web_sm
