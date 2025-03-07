@@ -124,7 +124,15 @@ def generate_movie_conversations():
     return conversations
 
 # Configure and Train Chatterbot
-chatbot = ChatBot("MovieBot", storage_adapter="chatterbot.storage.SQLStorageAdapter")
+#chatbot = ChatBot("MovieBot", storage_adapter="chatterbot.storage.SQLStorageAdapter")
+chatbot = ChatBot("MovieBot", storage_adapter="chatterbot.storage.SQLStorageAdapter",
+                  logic_adapters=[
+                      {
+                          'import_path': 'chatterbot.logic.BestMatch',
+                          'default_response': "I'm sorry, but I don't understand.",
+                          'maximum_similarity_threshold': 0.90
+                      }
+                  ])
 trainer = ListTrainer(chatbot)
 trainer.train(generate_movie_conversations())
 print("Chatbot training complete using PostgreSQL data!")
