@@ -9,6 +9,15 @@ from telegram.ext import Application, CommandHandler, MessageHandler, filters, C
 from chatterbot import ChatBot
 from chatterbot.trainers import ListTrainer
 import spacy
+import subprocess
+
+try:
+    nlp = spacy.load("en_core_web_sm")
+except OSError:
+    print("Downloading en_core_web_sm model...")
+    subprocess.run(["python", "-m", "spacy", "download", "en_core_web_sm"])
+    nlp = spacy.load("en_core_web_sm")
+
 
 # Explicitly load .env
 load_dotenv(dotenv_path=".env")
