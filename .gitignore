@@ -1,3 +1,4 @@
 .env
 data/
 upload_movies.py
+myenv/
