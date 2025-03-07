@@ -8,6 +8,12 @@ from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, CallbackContext
 from chatterbot import ChatBot
 from chatterbot.trainers import ListTrainer
+import spacy
+try:
+    nlp = spacy.load("en_core_web_sm")
+    print("✅ SpaCy Model Loaded Successfully!")
+except Exception as e:
+    print(f"❌ Error Loading SpaCy Model: {e}")
 
 # Explicitly load .env
 load_dotenv(dotenv_path=".env")
