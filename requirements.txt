@@ -9,4 +9,5 @@ pandas
 python-dotenv
 gdown
 psycopg2-binary
-spacy
+spacy==3.8.4
+en-core-web-sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.x.x/en_core_web_sm-3.x.x-py3-none-any.whl
