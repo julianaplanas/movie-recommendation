@@ -9,8 +9,12 @@ from telegram.ext import Application, CommandHandler, MessageHandler, filters, C
 from chatterbot import ChatBot
 from chatterbot.trainers import ListTrainer
 import spacy
+
+model_path = os.path.join(spacy.__path__[0], "data", "en_core_web_sm")
+print(f"🔍 Checking Model Path: {model_path}")
+
 try:
-    nlp = spacy.load("en_core_web_sm")
+    nlp = spacy.load(model_path)
     print("✅ SpaCy Model Loaded Successfully!")
 except Exception as e:
     print(f"❌ Error Loading SpaCy Model: {e}")
