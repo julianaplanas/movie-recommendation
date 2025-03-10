@@ -189,14 +189,6 @@ async def handle_message(update: Update, context: CallbackContext):
 
     await update.message.reply_text(str(response))
 
-# Telegram Bot Initialization
-async def main():
-    """Starts the Telegram bot with async handling"""
-    app = Application.builder().token(TELEGRAM_TOKEN).build()
-    app.add_handler(CommandHandler("start", start))
-    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
-    print("🎬 MovieBot is running on Telegram...")
-    await app.run_polling()
 
 # Run the Bot in Async Mode
 #if __name__ == "__main__":
