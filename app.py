@@ -203,6 +203,11 @@ async def main():
 #    nest_asyncio.apply()
 #    asyncio.create_task(main())
 
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logging.info("Bot is starting...")
+
 import nest_asyncio
 import asyncio
 
@@ -225,8 +230,6 @@ async def main():
         port=8080,
         url_path=f"/{TELEGRAM_TOKEN}"  # Ensure the token is prefixed with "/"
     )
-
-
 
 if __name__ == "__main__":
     asyncio.run(main())
