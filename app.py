@@ -208,15 +208,26 @@ import asyncio
 
 nest_asyncio.apply()  # Apply this to fix issues with nested event loops
 
+WEBHOOK_URL = "https://your-app-name.up.railway.app"  # Replace with your Railway app URL
+
 async def main():
-    """Starts the Telegram bot with async handling"""
+    """Starts the Telegram bot with Webhook"""
     app = Application.builder().token(TELEGRAM_TOKEN).build()
+    
     app.add_handler(CommandHandler("start", start))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
-    print("🎬 MovieBot is running on Telegram...")
-    await app.run_polling()
+    
+    print("🎬 MovieBot is running on Telegram with Webhook...")
+
+    await app.bot.setWebhook(f"{WEBHOOK_URL}/{TELEGRAM_TOKEN}/")  # Set webhook
+    await app.run_webhook(
+        listen="0.0.0.0",
+        port=8080,
+        url_path=f"/{TELEGRAM_TOKEN}"  # Ensure the token is prefixed with "/"
+    )
+
+
 
 if __name__ == "__main__":
-    asyncio.run(main())  # Ensure proper async execution
+    asyncio.run(main())
 
-# force rebuild
