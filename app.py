@@ -205,7 +205,7 @@ import asyncio
 
 nest_asyncio.apply()  # Apply this to fix issues with nested event loops
 
-WEBHOOK_URL = "https://movie-recommendation-production-ad5b.up.railway.app"
+WEBHOOK_URL = "https://movie-recommendation-production-ad5b.up.railway.app:8443/"
 
 async def main():
     """Starts the Telegram bot with Webhook"""
