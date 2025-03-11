@@ -219,7 +219,7 @@ async def main():
     await app.bot.setWebhook(f"{WEBHOOK_URL}/{TELEGRAM_TOKEN}/")  # Set webhook
     await app.run_webhook(
         listen="0.0.0.0",
-        port=8080,
+        port=int(os.getenv("PORT", 8443)),  # Uses PORT env variable, defaults to 8443 if not set
         url_path=f"/{TELEGRAM_TOKEN}"  # Ensure the token is prefixed with "/"
     )
 
