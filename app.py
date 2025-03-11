@@ -18,6 +18,11 @@ load_dotenv(dotenv_path=".env")
 # Load Environment Variables
 DB_URL = os.getenv("DATABASE_URL")
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
+WEBHOOK_URL = os.getenv("WEBHOOK_URL")
+
+print(f"TELEGRAM_TOKEN: {TELEGRAM_TOKEN}")  # Debugging
+print(f"DATABASE_URL: {DB_URL}") 
+print(f"WEBHOOK_URL: {WEBHOOK_URL}")  # Debugging
 
 if not DB_URL:
     raise ValueError("DATABASE_URL is not set! Check your .env file or environment variables.")
@@ -205,8 +210,6 @@ import asyncio
 
 nest_asyncio.apply()  # Apply this to fix issues with nested event loops
 
-WEBHOOK_URL = "https://movie-recommendation-production-ad5b.up.railway.app:8443/"
-
 async def main():
     """Starts the Telegram bot with Webhook"""
     app = Application.builder().token(TELEGRAM_TOKEN).build()
@@ -216,11 +219,11 @@ async def main():
     
     print("🎬 MovieBot is running on Telegram with Webhook...")
 
-    await app.bot.setWebhook(f"{WEBHOOK_URL}/{TELEGRAM_TOKEN}/")  # Set webhook
+    await app.bot.setWebhook(f"{WEBHOOK_URL}/{TELEGRAM_TOKEN}")
     await app.run_webhook(
         listen="0.0.0.0",
-        port=int(os.getenv("PORT", 8443)),  # Uses PORT env variable, defaults to 8443 if not set
-        url_path=f"/{TELEGRAM_TOKEN}"  # Ensure the token is prefixed with "/"
+        port=int(os.getenv("PORT", 443)),  # Uses PORT env variable, defaults to 8443 if not set
+        url_path=f"/{TELEGRAM_TOKEN}"
     )
 
 if __name__ == "__main__":
