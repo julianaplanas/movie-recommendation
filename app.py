@@ -9,6 +9,12 @@ from telegram.ext import Application, CommandHandler, MessageHandler, filters, C
 from chatterbot import ChatBot
 from chatterbot.trainers import ListTrainer
 import spacy
+import logging
+
+logging.basicConfig(level=logging.DEBUG, format="%(asctime)s - %(levelname)s - %(message)s")
+logger = logging.getLogger(__name__)
+
+logger.info("Starting Telegram bot...")
 
 nlp = spacy.load("en_core_web_sm")
 
@@ -20,9 +26,10 @@ DB_URL = os.getenv("DATABASE_URL")
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 WEBHOOK_URL = os.getenv("WEBHOOK_URL")
 
-print(f"TELEGRAM_TOKEN: {TELEGRAM_TOKEN}")  # Debugging
-print(f"DATABASE_URL: {DB_URL}") 
-print(f"WEBHOOK_URL: {WEBHOOK_URL}")  # Debugging
+logger.debug(f"TELEGRAM_TOKEN: {TELEGRAM_TOKEN}")
+logger.debug(f"DATABASE_URL: {DB_URL}")
+logger.debug(f"WEBHOOK_URL: {WEBHOOK_URL}")
+logger.debug(f"PORT from env: {os.getenv('PORT')}")
 
 if not DB_URL:
     raise ValueError("DATABASE_URL is not set! Check your .env file or environment variables.")
@@ -200,11 +207,6 @@ async def handle_message(update: Update, context: CallbackContext):
 #    nest_asyncio.apply()
 #    asyncio.create_task(main())
 
-import logging
-
-logging.basicConfig(level=logging.INFO)
-logging.info("Bot is starting...")
-
 import nest_asyncio
 import asyncio
 
@@ -218,6 +220,8 @@ async def main():
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
     
     print("🎬 MovieBot is running on Telegram with Webhook...")
+
+    logger.info(f"Setting Telegram webhook to {WEBHOOK_URL}/{TELEGRAM_TOKEN}")
 
     await app.bot.setWebhook(f"{WEBHOOK_URL}/{TELEGRAM_TOKEN}")
     await app.run_webhook(
