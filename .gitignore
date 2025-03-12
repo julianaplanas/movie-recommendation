@@ -1,1 +1,9 @@
 .env
+data/
+myenv/
+db.sqlite3
+db.sqlite3-wal
+db.sqlite3-shm
+training_data.json
+upload_movies.py
+upload_training_data.py
