@@ -27,6 +27,9 @@ DB_URL = os.getenv("DATABASE_URL")
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 WEBHOOK_URL = os.getenv("WEBHOOK_URL")
 
+if not WEBHOOK_URL:
+    WEBHOOK_URL = "https://movie-recommendation-production-ad5b.up.railway.app"
+
 # Database Connection Function
 def get_db_connection():
     """Establishes a PostgreSQL connection."""
@@ -252,7 +255,10 @@ async def main():
 
 if __name__ == "__main__":
     try:
-        asyncio.run(main())  # Ensures a new event loop is created
+        loop = asyncio.get_running_loop()
+        if loop.is_running():
+            loop.create_task(main())  # Run as a background task in Railway
+        else:
+            loop.run_until_complete(main())
     except RuntimeError:
-        loop = asyncio.get_event_loop()
-        loop.run_until_complete(main())
+        asyncio.run(main())
