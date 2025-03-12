@@ -30,6 +30,8 @@ WEBHOOK_URL = os.getenv("WEBHOOK_URL")
 if not WEBHOOK_URL:
     WEBHOOK_URL = "https://movie-recommendation-production-ad5b.up.railway.app"
 
+logger.info(f"WEBHOOK_URL: {WEBHOOK_URL}")
+
 # Database Connection Function
 def get_db_connection():
     """Establishes a PostgreSQL connection."""
@@ -252,13 +254,19 @@ async def main():
         url_path=f"/{TELEGRAM_TOKEN}"
     )
 
+#if __name__ == "__main__":
+    #try:
+    #    loop = asyncio.get_running_loop()
+    #    if loop.is_running():
+    #        loop.create_task(main())  # Run as a background task in Railway
+    #    else:
+    #        loop.run_until_complete(main())
+    #except RuntimeError:
+#        asyncio.run(main())
 
 if __name__ == "__main__":
     try:
-        loop = asyncio.get_running_loop()
-        if loop.is_running():
-            loop.create_task(main())  # Run as a background task in Railway
-        else:
-            loop.run_until_complete(main())
+        asyncio.run(main())  # Ensures proper async execution in Railway
     except RuntimeError:
-        asyncio.run(main())
+        loop = asyncio.get_event_loop()
+        loop.create_task(main()) 
