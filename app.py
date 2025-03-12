@@ -142,8 +142,17 @@ chatbot = ChatBot("MovieBot", storage_adapter="chatterbot.storage.SQLStorageAdap
 #trainer.train(generate_movie_conversations())
 #print("Chatbot training complete using PostgreSQL data!")
 
-import json
-import os
+def load_chatbot_data_from_db():
+    """Fetches chatbot responses from PostgreSQL without retraining."""
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    cur.execute("SELECT input, response FROM chatbot_training_data;")
+    chatbot_responses = {row[0]: row[1] for row in cur.fetchall()}  # Dictionary for quick lookup
+
+    cur.close()
+    conn.close()
+    return chatbot_responses
 
 if os.getenv("TRAIN_BOT", "False").lower() == "true":
     logger.info("Training chatbot...")
@@ -163,16 +172,9 @@ if os.getenv("TRAIN_BOT", "False").lower() == "true":
 else:
     logger.info("Loading pretrained Chatterbot model...")
     
-    try:
-        with open("training_data.json", "r") as f:
-            conversation_data = json.load(f)
-        
-        trainer = ListTrainer(chatbot)
-        trainer.train(conversation_data)  # Retrain with existing data
-
-        logger.info("Chatbot loaded from training data.")
-    except FileNotFoundError:
-        logger.warning("No training data found! The bot might not respond properly.")
+    # Load chatbot knowledge from PostgreSQL
+    chatbot_knowledge = load_chatbot_data_from_db()
+    logger.info(f"✅ Loaded {len(chatbot_knowledge)} responses from PostgreSQL.")
 
 # Function to Fetch Movie Recommendations from PostgreSQL
 def get_movie_recommendation(query):
@@ -218,8 +220,12 @@ async def handle_message(update: Update, context: CallbackContext):
     response = get_movie_recommendation(user_text)
     
     # If no recommendation found, fall back to Chatterbot response
-    if response == "I couldn't find that movie in my database.":
-        response = chatbot.get_response(user_text)
+    if user_text in chatbot_knowledge:
+        response = chatbot_knowledge[user_text]  # Fetch from PostgreSQL
+        logger.info(f"🔹 Response from database: {response}")
+    else:
+        response = chatbot.get_response(user_text)  # Fall back to Chatterbot
+        logger.info(f"⚠️ Response from Chatterbot: {response}")
 
     await update.message.reply_text(str(response))
 
