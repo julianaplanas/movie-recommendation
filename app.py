@@ -250,7 +250,7 @@ async def main():
     await app.bot.setWebhook(f"{WEBHOOK_URL}/{TELEGRAM_TOKEN}")
     await app.run_webhook(
         listen="0.0.0.0",
-        port=int(os.getenv("PORT", 443)),
+        port=int(os.getenv("PORT", 8443)),
         url_path=f"/{TELEGRAM_TOKEN}"
     )
 
@@ -270,3 +270,11 @@ if __name__ == "__main__":
     except RuntimeError:
         loop = asyncio.get_event_loop()
         loop.create_task(main()) 
+
+from flask import Flask
+
+app = Flask(__name__)
+
+@app.route("/")
+def home():
+    return "Bot is running!", 200
