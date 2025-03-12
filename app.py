@@ -249,10 +249,10 @@ async def main():
         url_path=f"/{TELEGRAM_TOKEN}"
     )
 
+
 if __name__ == "__main__":
     try:
-        loop = asyncio.get_running_loop()
+        asyncio.run(main())  # Ensures a new event loop is created
+    except RuntimeError:
+        loop = asyncio.get_event_loop()
         loop.run_until_complete(main())
-    except RuntimeError:  # If no running event loop
-        asyncio.run(main())
-
