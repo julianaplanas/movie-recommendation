@@ -222,17 +222,24 @@ async def handle_message(update: Update, context: CallbackContext):
     user_text = update.message.text
 
     # Query PostgreSQL for movie recommendations
-    response = get_movie_recommendation(user_text)
+    #response = get_movie_recommendation(user_text)
     
     # If no recommendation found, fall back to Chatterbot response
-    if user_text in chatbot_knowledge:
-        response = chatbot_knowledge[user_text]  # Fetch from PostgreSQL
-        logger.info(f"🔹 Response from database: {response}")
-    else:
-        response = chatbot.get_response(user_text)  # Fall back to Chatterbot
-        logger.info(f"⚠️ Response from Chatterbot: {response}")
+    #if user_text in chatbot_knowledge:
+    #    response = chatbot_knowledge[user_text]  # Fetch from PostgreSQL
+    #    logger.info(f"🔹 Response from database: {response}")
+    #else:
+    #    response = chatbot.get_response(user_text)  # Fall back to Chatterbot
+    #    logger.info(f"⚠️ Response from Chatterbot: {response}")
 
-    await update.message.reply_text(str(response))
+    #await update.message.reply_text(str(response))
+
+    logger.info(f"📩 Received message: {user_text}")
+
+    response = "The bot is working! 🚀 (DB disabled)"
+    
+    await update.message.reply_text(response)
+    logger.info(f"✅ Sent response: {response}")
 
 nest_asyncio.apply()
 
@@ -292,9 +299,11 @@ async def root():
 @app.post(f"/{TELEGRAM_TOKEN}")  # Webhook Endpoint
 async def webhook(request: Request):
     """Handles incoming Telegram updates"""
-    update = await request.json()
-    await application.update_queue.put(Update.de_json(update, application.bot))
+    update = Update.de_json(await request.json(), application.bot)
+    await application.process_update(update)  # Ensure processing
     return {"status": "ok"}
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=int(os.getenv("PORT", 8443)))
+    port = int(os.getenv("PORT", 8443))  # Fetch port from Railway
+    print(f"Running on port {port}")  # Debugging
+    uvicorn.run(app, host="0.0.0.0", port=port)
