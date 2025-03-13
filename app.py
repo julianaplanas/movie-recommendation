@@ -181,36 +181,34 @@ else:
     chatbot_knowledge = load_chatbot_data_from_db()
     logger.info(f"✅ Loaded {len(chatbot_knowledge)} responses from PostgreSQL.")
 
-# Function to Fetch Movie Recommendations from PostgreSQL
+
 def get_movie_recommendation(query):
-    """Fetch a movie recommendation from PostgreSQL based on user query."""
-    conn = get_db_connection()
-    cur = conn.cursor()
-    
-    cur.execute("""
-        SELECT title, overview, genres, vote_average, "cast"
-        FROM movies_full
-        WHERE title ILIKE %s
-        LIMIT 1;
-    """, (f"%{query}%",))
-    
-    result = cur.fetchone()
-    
-    cur.close()
-    conn.close()
-    
-    if result:
-        title, overview, genres, rating, cast_json = result
-        if isinstance(cast_json, str):
-            cast_list = json.loads(cast_json)[:5]  # Parse JSON if it's a string
-        elif isinstance(cast_json, list):
-            cast_list = cast_json[:5]  # Already a list, just slice it
+    """Fetch a movie recommendation from PostgreSQL."""
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute("""
+            SELECT title, overview, genres, vote_average, "cast"
+            FROM movies_full
+            WHERE title ILIKE %s
+            LIMIT 1;
+        """, (f"%{query}%",))
+        
+        result = cur.fetchone()
+        cur.close()
+        conn.close()
+        
+        if result:
+            title, overview, genres, rating, cast_json = result
+            cast_list = json.loads(cast_json) if isinstance(cast_json, str) else cast_json
+            cast_names = ", ".join(cast_list[:5]) if cast_list else "N/A"
+            return f"🎬 {title}\n📖 {overview}\n⭐ Genre: {genres}\n💯 Rating: {rating}\n🎭 Cast: {cast_names}"
         else:
-            cast_list = []  # Handle unexpected cases gracefully
-        cast_names = ", ".join(cast_list)
-        return f"🎬 {title}\n📖 {overview}\n⭐ Genre: {genres}\n💯 Rating: {rating}\n🎭 Cast: {cast_names}"
-    else:
-        return "I couldn't find that movie in my database."
+            return "I couldn't find that movie in my database."
+    except Exception as e:
+        logger.error(f"Database error: {str(e)}")
+        return "⚠️ Error retrieving movie data. Try again later."
+
 
 # Telegram Bot Handlers
 async def start(update: Update, context: CallbackContext):
@@ -289,19 +287,34 @@ application = Application.builder().token(TELEGRAM_TOKEN).build()
 
 @app.on_event("startup")
 async def startup_event():
-    """Set the webhook when Cloud Run starts."""
+    """Set the webhook and initialize the Telegram bot."""
+    await application.initialize()  # Ensures proper bot setup
     await application.bot.setWebhook(f"{WEBHOOK_URL}/{TELEGRAM_TOKEN}")
+    logger.info(f"Webhook set at {WEBHOOK_URL}/{TELEGRAM_TOKEN}")
 
 @app.get("/")
 async def root():
     return {"message": "Bot is running on Cloud Run!"}
 
+#@app.post(f"/{TELEGRAM_TOKEN}")  # Webhook Endpoint
+#async def webhook(request: Request):
+#    """Handles incoming Telegram updates"""
+#    update = Update.de_json(await request.json(), application.bot)
+#    await application.process_update(update)  # Ensure processing
+#    return {"status": "ok"}
+
 @app.post(f"/{TELEGRAM_TOKEN}")  # Webhook Endpoint
 async def webhook(request: Request):
     """Handles incoming Telegram updates"""
-    update = Update.de_json(await request.json(), application.bot)
-    await application.process_update(update)  # Ensure processing
-    return {"status": "ok"}
+    try:
+        update_data = await request.json()
+        update = Update.de_json(update_data, application.bot)
+        await application.process_update(update)  # Ensure processing
+        return {"status": "ok"}
+    except Exception as e:
+        logger.error(f"Webhook processing error: {str(e)}")
+        return {"status": "error", "message": str(e)}
+
 
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 8443))  # Fetch port from Railway
