@@ -236,23 +236,23 @@ async def handle_message(update: Update, context: CallbackContext):
 
 nest_asyncio.apply()
 
-async def main():
-    """Starts the Telegram bot with Webhook"""
-    app = Application.builder().token(TELEGRAM_TOKEN).build()
-    
-    app.add_handler(CommandHandler("start", start))
-    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
-    
-    print("🎬 MovieBot is running on Telegram with Webhook...")
-
-    logger.info(f"Setting Telegram webhook to {WEBHOOK_URL}/{TELEGRAM_TOKEN}")
-
-    await app.bot.setWebhook(f"{WEBHOOK_URL}/{TELEGRAM_TOKEN}")
-    await app.run_webhook(
-        listen="0.0.0.0",
-        port=int(os.getenv("PORT", 8443)),
-        url_path=f"/{TELEGRAM_TOKEN}"
-    )
+#async def main():
+#    """Starts the Telegram bot with Webhook"""
+#    app = Application.builder().token(TELEGRAM_TOKEN).build()
+#    
+#    app.add_handler(CommandHandler("start", start))
+#    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
+#    
+#    print("🎬 MovieBot is running on Telegram with Webhook...")
+#
+#    logger.info(f"Setting Telegram webhook to {WEBHOOK_URL}/{TELEGRAM_TOKEN}")
+#
+#    await app.bot.setWebhook(f"{WEBHOOK_URL}/{TELEGRAM_TOKEN}")
+#    await app.run_webhook(
+#        listen="0.0.0.0",
+#        port=int(os.getenv("PORT", 8443)),
+#        url_path=f"/{TELEGRAM_TOKEN}"
+#    )
 
 #if __name__ == "__main__":
     #try:
@@ -264,17 +264,37 @@ async def main():
     #except RuntimeError:
 #        asyncio.run(main())
 
+#if __name__ == "__main__":
+#    try:
+#        asyncio.run(main())  # Ensures proper async execution in Railway
+#    except RuntimeError:
+#        loop = asyncio.get_event_loop()
+#        loop.create_task(main()) 
+
+
+from fastapi import FastAPI, Request
+from telegram.ext import Application
+import uvicorn
+
+app = FastAPI()
+
+application = Application.builder().token(TELEGRAM_TOKEN).build()
+
+@app.on_event("startup")
+async def startup_event():
+    """Set the webhook when Cloud Run starts."""
+    await application.bot.setWebhook(f"{WEBHOOK_URL}/{TELEGRAM_TOKEN}")
+
+@app.get("/")
+async def root():
+    return {"message": "Bot is running on Cloud Run!"}
+
+@app.post(f"/{TELEGRAM_TOKEN}")  # Webhook Endpoint
+async def webhook(request: Request):
+    """Handles incoming Telegram updates"""
+    update = await request.json()
+    await application.update_queue.put(Update.de_json(update, application.bot))
+    return {"status": "ok"}
+
 if __name__ == "__main__":
-    try:
-        asyncio.run(main())  # Ensures proper async execution in Railway
-    except RuntimeError:
-        loop = asyncio.get_event_loop()
-        loop.create_task(main()) 
-
-from flask import Flask
-
-app = Flask(__name__)
-
-@app.route("/")
-def home():
-    return "Bot is running!", 200
+    uvicorn.run(app, host="0.0.0.0", port=int(os.getenv("PORT", 8443)))
